@@ -11,34 +11,33 @@
 // Hint: keeping track of the size in percentage might be easier.
 // Hint: Make sure you quote the emoji characters. They are strings, after all.
 // Hint: document.getElementById("balloon") will get the balloon element on the page.
-const balloon = document.getElementById('balloon');
-const maxSize = 400;
+const balloon = document.getElementById("balloon");
+let balloonSize = 100;
 
-function stopBalloon() {
-    document.removeEventListener('keydown', resizeBalloon);
+function updateBalloonSize() {
+  balloon.style.fontSize = balloonSize + "%";
 }
 
-function resizeBalloon(event) {
-    let currentSize = parseFloat(window.getComputedStyle(balloon).fontSize);
+document.addEventListener("keydown", function(event) {
+  if (event.key === "ArrowUp") {
 
-    if (event.key === 'ArrowUp') {
-        currentSize *= 1.1;
-        balloon.style.fontSize = `${currentSize}px`;
-    } 
-    else if (event.key === 'ArrowDown') {
-        currentSize *= 0.9;
-        balloon.style.fontSize = `${currentSize}px`;
+    balloonSize += 10;
+    if (balloonSize >= 200) {
+      balloon.textContent = "💥";
+      document.removeEventListener("keydown", arguments.callee);
+    } else {
+      updateBalloonSize();
     }
+  } else if (event.key === "ArrowDown") {
 
-    if (currentSize >= maxSize) {
-        balloon.textContent = '💥';
-        stopBalloon();
+    if (balloonSize > 10) {
+      balloonSize -= 10;
+      updateBalloonSize();
     }
+  }
+});
 
-    event.preventDefault();
-}
-
-document.addEventListener('keydown', resizeBalloon);
+updateBalloonSize();
 
 // 2. The index.html page has a tabbed layout. Make the default state of the layout show
 // the first tab, and make it so that when you click the links at the top the correct
@@ -47,3 +46,22 @@ document.addEventListener('keydown', resizeBalloon);
 // function as expected. There are many ways to accomplish this task, but you will need
 // to at minimum add listeners to each link and toggle the display of the tab contents.
 // Hint: display: none; hides an element, and display: block; will bring it
+const tabLinks = document.querySelectorAll("#tabbed-layout ul li a");
+const tabContents = document.querySelectorAll("#tabbed-contents > div");
+
+function showTab(tabIndex) {
+
+  tabContents.forEach(content => content.style.display = "none");
+
+  tabContents[tabIndex].style.display = "block";
+}
+
+
+tabLinks.forEach((link, index) => {
+  link.addEventListener("click", function(event) {
+    event.preventDefault();
+    showTab(index);
+  });
+});
+
+showTab(0);
